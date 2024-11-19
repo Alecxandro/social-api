@@ -30,3 +30,14 @@ Future improvements:
 - Dockerize the app
 - Improve overall code quality
 - Detailed documentation
+
+
+## Contact
+
+If you have any questions or suggestions, or even if you want to offer me a job, feel free to contact me.
+
+- [Email](mailto:alecxandroch@gmail.com)
+
+## Legal
+
+This project is not licensed. Feel free to use it as you want. But don't forget to mention me if it was helpful hehe.
