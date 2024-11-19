@@ -20,15 +20,15 @@ export const getTimelinePosts = async (req, res) => {
         .limit(postsPerPage)
         .sort({ random: 1 })
 
-        // If no recent posts, get latest posts from followed users
+        
         if (!posts.length) {
             posts = await Post.find({
                 author: { $in: user.following }
             })
             .populate('author', 'username name')
             .limit(postsPerPage)
-            .sort({ createdAt: -1 })  // Get the most recent posts first
-            .sort({ random: 1 })      // Then randomize them
+            .sort({ createdAt: -1 })  
+            .sort({ random: 1 })      
         }
 
         if (!posts.length) {
@@ -58,28 +58,28 @@ export const getTimelinePostsFromAllUsers = async (req, res) => {
                     createdAt: { $gte: oneHourAgo }
                 }
             },
-            // Add randomization factor
+            
             {
                 $addFields: {
                     random: { $rand: {} }
                 }
             },
-            // Calculate engagement metrics
+            
             {
                 $addFields: {
                     likesCount: { $size: "$likes" },
                     commentsCount: { $size: "$comments" },
                     isFavorited: { $in: [userId, "$favorites"] },
                     
-                    // Time decay factor (newer posts score higher)
+                    
                     timeDecayScore: {
                         $divide: [
                             { $subtract: ["$createdAt", oneHourAgo] },
-                            3600000  // milliseconds in an hour
+                            3600000  
                         ]
                     },
                     
-                    // Engagement velocity (rate of engagement)
+                    
                     engagementVelocity: {
                         $divide: [
                             { $add: [
@@ -88,13 +88,13 @@ export const getTimelinePostsFromAllUsers = async (req, res) => {
                             ]},
                             { $add: [
                                 { $subtract: [new Date(), "$createdAt"] },
-                                1  // Prevent division by zero
+                                1  
                             ]}
                         ]
                     }
                 }
             },
-            // Lookup user interaction history
+            
             {
                 $lookup: {
                     from: "interactions",
@@ -105,7 +105,7 @@ export const getTimelinePostsFromAllUsers = async (req, res) => {
                                 $expr: {
                                     $and: [
                                         { $eq: ["$userId", userId] },
-                                        { $gt: ["$createdAt", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)] } // Last 7 days
+                                        { $gt: ["$createdAt", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)] } 
                                     ]
                                 }
                             }
@@ -114,28 +114,28 @@ export const getTimelinePostsFromAllUsers = async (req, res) => {
                     as: "userInteractions"
                 }
             },
-            // Calculate comprehensive relevance score
+            
             {
                 $addFields: {
                     relevanceScore: {
                         $add: [
-                            // Base engagement score
+                            
                             { $multiply: [{ $size: "$likes" }, 1] },
                             { $multiply: [{ $size: "$comments" }, 2] },
                             
-                            // Velocity bonus (trending content)
+                            
                             { $multiply: ["$engagementVelocity", 1000] },
                             
-                            // Time decay factor
+                            
                             { $multiply: ["$timeDecayScore", 2] },
                             
-                            // User interaction history weight
+                            
                             { $multiply: [{ $size: "$userInteractions" }, 0.5] },
                             
-                            // Random factor for discovery
+                            
                             { $multiply: ["$random", 3] },
                             
-                            // Penalty for already favorited content
+                            
                             {
                                 $cond: [
                                     "$isFavorited",
@@ -144,7 +144,7 @@ export const getTimelinePostsFromAllUsers = async (req, res) => {
                                 ]
                             },
                             
-                            // Bonus for high engagement ratio
+                            
                             {
                                 $cond: [
                                     { $gt: ["$engagementVelocity", 0.5] },
@@ -156,15 +156,15 @@ export const getTimelinePostsFromAllUsers = async (req, res) => {
                     }
                 }
             },
-            // Sort by final score
+         
             {
                 $sort: { relevanceScore: -1 }
             },
-            // Limit results
+          
             {
                 $limit: postsPerPage
             },
-            // Final projection
+      
             {
                 $project: {
                     content: 1,
@@ -186,7 +186,7 @@ export const getTimelinePostsFromAllUsers = async (req, res) => {
         })
 
         if (!posts.length) {
-            // Enhanced fallback for no recent posts
+            
             const randomPosts = await Post.aggregate([
                 {
                     $addFields: {
