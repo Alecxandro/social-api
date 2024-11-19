@@ -5,6 +5,7 @@ import connectDB from './utils/dbConnection.js';
 import authRoutes from './routes/authRoutes.js'
 import userRoutes from './routes/userRoutes.js'
 import postRoutes from './routes/postRoutes.js'
+import timelineRoutes from './routes/timelineRoutes.js'
 
 import errorHandlerMiddleware from './middlewares/errorHandlerMiddleware.js';
 
@@ -20,6 +21,7 @@ app.use(morgan('dev'));
 app.use('/api/auth', authRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/posts', postRoutes)
+app.use('/api/timeline', timelineRoutes)
 app.use(errorHandlerMiddleware)
 
 export default app;
