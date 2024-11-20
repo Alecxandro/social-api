@@ -47,7 +47,7 @@ export const getTimelinePosts = async (req, res) => {
 
 export const getTimelinePostsFromAllUsers = async (req, res) => {
     try {
-        const postsPerPage = 30
+        const postsPerRequest = 30
         const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000)
         const userId = req.user.id
 
@@ -162,7 +162,7 @@ export const getTimelinePostsFromAllUsers = async (req, res) => {
             },
           
             {
-                $limit: postsPerPage
+                $limit: postsPerRequest
             },
       
             {
@@ -206,7 +206,7 @@ export const getTimelinePostsFromAllUsers = async (req, res) => {
                     }
                 },
                 {
-                    $limit: postsPerPage
+                    $limit: postsPerRequest
                 }
             ]).exec()
 
